@@ -1,16 +1,37 @@
-import React from "react";
 import {Jumbotron, Button} from "reactstrap";
+import {AiFillAmazonCircle} from "react-icons/ai"
+import "./header.css"
+import {Link} from "react-router-dom";
+import {Route} from "react-router";
 
-const Header = () => {
+const Header = (props) => {
+
+    const buy = () => {
+        //todo: Покупка (оформление заказа на сервер сайде) + добавить юзера, который оформляет заказ
+        props.sendOrder({basket:props.basket})
+        props.setBasket([])
+        alert('Покупка совершена');
+    }
+
     return (
         <Jumbotron>
-            <h1 className="display-3">Essential Book Store</h1>
-            <p className="lead">This is a simple hero unit, a simple Jumbotron-style component for calling extra attention to featured content or information.</p>
-            <hr className="my-2" />
-            <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+            <h1 className="display-3">(Не) книжный магазин</h1>
+            <p className="lead">Почти руссифицированный текст</p>
+            <hr className="my-2"/>
+            <p>Всё-равно никто не прочитает</p>
             <p className="lead">
-                <Button color="primary">Learn More</Button>
+                <Link to={"/catalog"} className="btn btn-primary">Магазин</Link>
             </p>
+            <Link to={"/basket"}>
+                <div className={"basket-container"}>
+                    Корзина
+                    <AiFillAmazonCircle size={50}/>
+                    {props.basket.length}
+                </div>
+            </Link>
+            <Route path={"/basket"}>
+                <button className={"buy-button"} onClick={() => buy()}>Купить</button>
+            </Route>
         </Jumbotron>
     );
 }

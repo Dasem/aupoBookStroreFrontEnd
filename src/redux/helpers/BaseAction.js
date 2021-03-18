@@ -1,7 +1,7 @@
 class BaseAction {
     constructor(type, payload = {}) {
-        this.payload = payload;
         this.type = type;
+        this.payload = payload;
     }
 }
 

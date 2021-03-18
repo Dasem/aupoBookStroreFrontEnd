@@ -1,19 +1,14 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Row} from "reactstrap";
 
 import BookCard from "../book-card/book-card-container";
 
-const Catalog = (props) => {
-
-    useEffect(() => {
-        props.getBooks();
-    }, []);
-
+const Basket = (props) => {
     return (
         <div>
             <Row xs={"3"}>
                 {
-                    props.books && props.books.map(book => {
+                    props.basket && props.basket.map(book => {
                         return (
                             <BookCard key={`book-${book.id}`} book={book} />
                         )
@@ -24,4 +19,4 @@ const Catalog = (props) => {
     );
 }
 
-export default Catalog;
+export default Basket;

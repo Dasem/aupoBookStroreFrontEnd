@@ -1,0 +1,15 @@
+.basket-count {
+    font-size: 30px;
+}
+
+.basket-icon:hover {
+    color: chocolate;
+}
+
+.basket-container {
+    font-size: 25px;
+}
+
+.buy-button {
+    float: right;
+}

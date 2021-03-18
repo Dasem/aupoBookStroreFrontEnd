@@ -1,9 +1,10 @@
-import {createStore, applyMiddleware} from "redux";
+import {applyMiddleware, createStore} from "redux";
 import thunk from "redux-thunk";
 import {createLogger} from "redux-logger";
 import reducers from "./reducers/reducers"
 
 import booksMiddleware from "./middleware/books"
+import ordersMiddleware from "./middleware/orders";
 
 /**
  * To initialize the store
@@ -16,12 +17,11 @@ export default function configureStore() {
     // create middleware
     const middleware = applyMiddleware(...[
         thunk,
-        booksMiddleware()
+        booksMiddleware(),
+        ordersMiddleware(),
     ]);
 
     // create a new store and return it
-    var store = createStore(reducers, {},  middleware);
-
     // store.dispatch();
-    return store;
+    return createStore(reducers, {}, middleware);
 }

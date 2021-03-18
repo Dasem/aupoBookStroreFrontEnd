@@ -1,0 +1,15 @@
+.add-to-basket {
+    width: fit-content;
+}
+
+.add-to-basket:hover {
+    color: chocolate;
+}
+
+.remove-from-basket {
+    width: fit-content;
+}
+
+.remove-from-basket:hover {
+    color: chocolate;
+}
