@@ -3,7 +3,8 @@ import BookCard from "./book-card";
 import {SetBasket} from "../../redux/actions/basket";
 
 const mapStateToProps = state => ({
-    basket: state.basket.basket
+    basket: state.basket.basket,
+    role: state.role.role,
 })
 
 const mapDispatchToProps = dispatch => {

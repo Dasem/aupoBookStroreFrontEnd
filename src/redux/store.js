@@ -5,6 +5,8 @@ import reducers from "./reducers/reducers"
 
 import booksMiddleware from "./middleware/books"
 import ordersMiddleware from "./middleware/orders";
+import roleMiddleware from "./middleware/role";
+import authorisationMiddleware from "./middleware/authorisation";
 
 /**
  * To initialize the store
@@ -19,6 +21,8 @@ export default function configureStore() {
         thunk,
         booksMiddleware(),
         ordersMiddleware(),
+        roleMiddleware(),
+        authorisationMiddleware(),
     ]);
 
     // create a new store and return it

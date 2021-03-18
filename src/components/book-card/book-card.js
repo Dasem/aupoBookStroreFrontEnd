@@ -3,6 +3,7 @@ import {Alert, Col} from "reactstrap";
 import {AiFillMinusCircle, AiFillPlusCircle} from "react-icons/all";
 import "./book-card.css"
 import {Route} from "react-router";
+import {ANONYMOUS} from "../consts/role";
 
 const BookCard = (props) => {
 
@@ -23,11 +24,13 @@ const BookCard = (props) => {
 
     return (
         <Col>
-            <Route path={"/catalog"}>
-                <div className={"add-to-basket"} onClick={() => addBookToBasket()}>
-                    <AiFillPlusCircle size={30}/>
-                </div>
-            </Route>
+            {props.role !== ANONYMOUS &&
+                <Route path={"/catalog"}>
+                    <div className={"add-to-basket"} onClick={() => addBookToBasket()}>
+                        <AiFillPlusCircle size={30}/>
+                    </div>
+                </Route>
+            }
             <Route path={"/basket"}>
                 <div className={"remove-from-basket"} onClick={() => removeBookFromBasket()}>
                     <AiFillMinusCircle size={30}/>

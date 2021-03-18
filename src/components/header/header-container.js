@@ -4,7 +4,8 @@ import {SetBasket} from "../../redux/actions/basket";
 import {SendOrder} from "../../redux/actions/order";
 
 const mapStateToProps = state => ({
-    basket: state.basket.basket
+    basket: state.basket.basket,
+    role: state.role.role,
 })
 
 const mapDispatchToProps = dispatch => {

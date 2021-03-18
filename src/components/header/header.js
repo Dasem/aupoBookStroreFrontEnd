@@ -1,16 +1,26 @@
-import {Jumbotron, Button} from "reactstrap";
+import {Jumbotron} from "reactstrap";
 import {AiFillAmazonCircle} from "react-icons/ai"
 import "./header.css"
 import {Link} from "react-router-dom";
 import {Route} from "react-router";
+import {ANONYMOUS} from "../consts/role";
 
 const Header = (props) => {
 
     const buy = () => {
-        //todo: Покупка (оформление заказа на сервер сайде) + добавить юзера, который оформляет заказ
-        props.sendOrder({basket:props.basket})
+        //todo: Покупка добавить юзера, который оформляет заказ
+        props.sendOrder({basket: props.basket})
         props.setBasket([])
         alert('Покупка совершена');
+    }
+
+    const logout = () => {
+        // todo: сделать логаут
+    }
+
+    const authorisation = () => {
+        // todo: сделать авторизацию
+
     }
 
     return (
@@ -22,16 +32,26 @@ const Header = (props) => {
             <p className="lead">
                 <Link to={"/catalog"} className="btn btn-primary">Магазин</Link>
             </p>
-            <Link to={"/basket"}>
-                <div className={"basket-container"}>
-                    Корзина
-                    <AiFillAmazonCircle size={50}/>
-                    {props.basket.length}
-                </div>
+            {props.role !== ANONYMOUS &&
+            <div>
+                <Link to={"/basket"}>
+                    <div className={"basket-container"}>
+                        Корзина
+                        <AiFillAmazonCircle size={50}/>
+                        {props.basket.length}
+                    </div>
+                </Link>
+                <Route path={"/basket"}>
+                    <button className={"buy-button"} onClick={() => buy()}>Купить</button>
+                </Route>
+                <button className={"logout-button"} onClick={() => logout()}>Выйти</button>
+            </div>
+            }
+            {props.role === ANONYMOUS &&
+            <Link to={"/authorisation"}>
+                <button className={"authorisation-button"}>Войти / Зарегистрироваться</button>
             </Link>
-            <Route path={"/basket"}>
-                <button className={"buy-button"} onClick={() => buy()}>Купить</button>
-            </Route>
+            }
         </Jumbotron>
     );
 }
