@@ -1,103 +1,73 @@
-import React from "react";
-import {Button} from "reactstrap";
-import {AvForm, AvField} from "availity-reactstrap-validation";
+import React, {useState} from "react";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import "./login-form.css"
 import {useHistory} from "react-router";
+import axios from "axios";
+
 
 const LoginForm = (props) => {
-    const handleValidSubmit = (event, values) => {
-        login(values);
-    };
 
-    const handleInvalidSubmit = (event, errors, values) => {
-        //this.setState({login: values.login, error: true});
-        console.log(`Login failed`);
-    };
+    const [login, setLogin] = useState("");
+    const [password, setPassword] = useState("");
+    const history = useHistory();
 
-    const login = (values) => {
+    const auth = () => {
         //props.tryToLogin({login: values.login, password: values.password})
-        fetch("http://localhost:8080/perform_login", {
-            method: 'post',
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-            body: new URLSearchParams({login: values.login, password: values.password}),
+        return axios
+            .post("http://localhost:8080/signin", {
+                login,
+                password,
+            })
+            .then((response) => {
+                if (response.data.accessToken) {
+                    localStorage.setItem("user", JSON.stringify(response.data));
+                }
+                return response.data;
+            }).then(() => history.push('/catalog'));
+    }
+
+    const register = () => {
+        return axios.post("http://localhost:8080/signup", {
+            login,
+            password,
         }).then(
-            response => {
-                return props.getRole();
-            }
-        ).then(
-            response => history.push('/authorisation')
-        ).catch(
-            error => console.log(error)
+            () => auth()
         );
     }
 
-    const history = useHistory();
-
-    const register = (values) => {
-        fetch("http://localhost:8080/register", {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({login: values.login, password: values.password}),
-        }).then(
-            response => login(values) // Автоматическая авторизация по окончании регистрации
-        ).catch(
-            error => console.log(error)
-        );
+    function validateForm() {
+        return login.length > 0 && password.length > 0;
     }
 
     return (
-        <AvForm
-            onValidSubmit={(event, values) => handleValidSubmit(event, values)}
-            onInvalidSubmit={handleInvalidSubmit}
-        >
-            <AvField
-                name="login"
-                label="Логин"
-                type="text"
-                validate={{
-                    required: true,
-                    minLength: {
-                        value: 6,
-                        errorMessage: "Your login must be more than 5 characters"
-                    },
-                    maxLength: {
-                        value: 16,
-                        errorMessage: "Your login must be less than 17 characters"
-                    }
-                }}
-            />
-            <AvField
-                name="password"
-                label="Пароль"
-                type="password"
-                validate={{
-                    required: {
-                        value: true,
-                        errorMessage: "Please enter your password"
-                    },
-                    pattern: {
-                        value: "^[A-Za-z0-9]+$",
-                        errorMessage:
-                            "Your password must be composed only with letter and numbers"
-                    },
-                    minLength: {
-                        value: 6,
-                        errorMessage: "Your password must be between 6 and 16 characters"
-                    },
-                    maxLength: {
-                        value: 16,
-                        errorMessage: "Your password must be between 6 and 16 characters"
-                    }
-                }}
-            />
-            <div className={"authorisation-buttons"}>
-                <Button id="login">Войти</Button>
-                <Button id="register">Зарегистрироватсья</Button>
-            </div>
-        </AvForm>
+        <div className="Login">
+            <Form>
+                <Form.Group size="lg" controlId="login">
+                    <Form.Label>login</Form.Label>
+                    <Form.Control
+                        autoFocus
+                        type="login"
+                        value={login}
+                        onChange={(e) => setLogin(e.target.value)}
+                    />
+                </Form.Group>
+                <Form.Group size="lg" controlId="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </Form.Group>
+                <Button block size="lg" onClick={() => auth()} disabled={!validateForm()}>
+                    Войти
+                </Button>
+                <Button block size="lg" onClick={() => register()} disabled={!validateForm()}>
+                    Зарегистрироваться
+                </Button>
+            </Form>
+        </div>
     );
 }
 

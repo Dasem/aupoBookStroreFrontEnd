@@ -8,6 +8,7 @@ export default function booksMiddleware() {
         switch (action.type) {
             case GetBooksAction:
                 fetch("http://localhost:8080/books", {
+            //        mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'

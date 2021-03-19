@@ -2,26 +2,27 @@ import {Jumbotron} from "reactstrap";
 import {AiFillAmazonCircle} from "react-icons/ai"
 import "./header.css"
 import {Link} from "react-router-dom";
-import {Route} from "react-router";
-import {ANONYMOUS} from "../consts/role";
+import {Route, useHistory} from "react-router";
+import {ANONYMOUS, getAuthorities} from "../consts/role";
 
 const Header = (props) => {
 
     const buy = () => {
         //todo: Покупка добавить юзера, который оформляет заказ
-        props.sendOrder({basket: props.basket})
-        props.setBasket([])
-        alert('Покупка совершена');
+        if (props.basket.length === 0) {
+            alert('Корзина пуста, пожалуйста. добавьте товары');
+        } else {
+            props.sendOrder({basket: props.basket})
+            props.setBasket([])
+            alert('Покупка совершена');
+        }
     }
 
+    const history = useHistory();
+
     const logout = () => {
-        fetch("http://localhost:8080/logout")
-            .then(
-                response => props.history.push('/authorisation')
-            )
-            .catch(
-                error => console.log(error)
-            );
+        localStorage.removeItem("user");
+        history.push('/authorisation')
     }
 
     return (
@@ -33,7 +34,7 @@ const Header = (props) => {
             <p className="lead">
                 <Link to={"/catalog"} className="btn btn-primary">Магазин</Link>
             </p>
-            {props.role !== ANONYMOUS &&
+            {!getAuthorities().includes(ANONYMOUS) &&
             <div>
                 <Link to={"/basket"}>
                     <div className={"basket-container"}>
@@ -48,7 +49,7 @@ const Header = (props) => {
                 <button className={"logout-button"} onClick={() => logout()}>Выйти</button>
             </div>
             }
-            {props.role === ANONYMOUS &&
+            {getAuthorities().includes(ANONYMOUS) &&
             <Link to={"/authorisation"}>
                 <button className={"authorisation-button"}>Войти / Зарегистрироваться</button>
             </Link>

@@ -1,4 +1,5 @@
 import {GetOrdersAction, SendOrderAction, SetOrders} from "../actions/order";
+import {authHeader} from "../../components/consts/auth-header";
 
 /**
  * Middleware function
@@ -8,7 +9,9 @@ export default function ordersMiddleware() {
         switch (action.type) {
             case GetOrdersAction:
                 fetch("http://localhost:8080/orders", {
+             //       mode: 'no-cors',
                     headers: {
+                        ...authHeader(),
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     }
@@ -22,6 +25,7 @@ export default function ordersMiddleware() {
                 fetch("http://localhost:8080/order", {
                     method: 'post',
                     headers: {
+                        ...authHeader(),
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
                     },

@@ -5,7 +5,7 @@ import Catalog from "../catalog/catalog-container";
 import {BrowserRouter as Router} from "react-router-dom";
 import {Switch, Route} from "react-router";
 import Basket from "../basket/basket-container";
-import Login from "../login/login";
+import LoginForm from "../login/login-form-container";
 
 const MainPage = () => {
 
@@ -24,7 +24,7 @@ const MainPage = () => {
                         <Basket/>
                     </Route>
                     <Route path="/authorisation">
-                        <Login/>
+                        <LoginForm/>
                     </Route>
                 </Switch>
             </Router>

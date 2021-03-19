@@ -3,12 +3,16 @@ import {Alert, Col} from "reactstrap";
 import {AiFillMinusCircle, AiFillPlusCircle} from "react-icons/all";
 import "./book-card.css"
 import {Route} from "react-router";
-import {ANONYMOUS} from "../consts/role";
+import {ANONYMOUS, getAuthorities} from "../consts/role";
 
 const BookCard = (props) => {
 
+    const alreadyInBasket = () => {
+        return props.basket.find((book) => props.book.id === book.id);
+    }
+
     const addBookToBasket = () => {
-        if (!props.basket.find((book) => props.book.id === book.id)) {
+        if (!alreadyInBasket()) {
             props.basket.push(props.book);
             props.setBasket(props.basket);
             //TODO: forceUpdate for adding
@@ -24,12 +28,12 @@ const BookCard = (props) => {
 
     return (
         <Col>
-            {props.role !== ANONYMOUS &&
-                <Route path={"/catalog"}>
-                    <div className={"add-to-basket"} onClick={() => addBookToBasket()}>
-                        <AiFillPlusCircle size={30}/>
-                    </div>
-                </Route>
+            {!getAuthorities().includes(ANONYMOUS) &&
+            <Route path={"/catalog"}>
+                <div className={"add-to-basket"}  onClick={() => addBookToBasket()}>
+                    <AiFillPlusCircle size={30}/>
+                </div>
+            </Route>
             }
             <Route path={"/basket"}>
                 <div className={"remove-from-basket"} onClick={() => removeBookFromBasket()}>
@@ -37,19 +41,12 @@ const BookCard = (props) => {
                 </div>
             </Route>
             <h3>{props.book.title}</h3>
-
             <p>
-                {
-                    props.book.author
-                }
+                {props.book.author}
             </p>
-
             <p>
-                {
-                    props.book.genres.map(genre => genre.name).join(" ")
-                }
+                {props.book.genres.map(genre => genre.name).join(" ")}
             </p>
-
             <Alert color={"success"}>{props.book.price}</Alert>
         </Col>
     );

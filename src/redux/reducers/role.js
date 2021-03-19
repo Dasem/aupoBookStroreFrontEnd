@@ -3,9 +3,10 @@
  * @type {{orders: []}}
  */
 import {SetRoleAction} from "../actions/role";
+import {ANONYMOUS} from "../../components/consts/role";
 
 const initialState = {
-    role: 'ANONYMOUS'
+    role: ANONYMOUS
 }
 
 /**

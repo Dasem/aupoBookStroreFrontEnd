@@ -7,6 +7,7 @@ export default function authorisationMiddleware() {
             case TryToLoginAction:
                 fetch("http://localhost:8080/login", {
                     method:'post',
+             //       mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'

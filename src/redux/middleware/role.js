@@ -7,13 +7,14 @@ export default function roleMiddleware() {
     return store => next => action => {
         switch (action.type) {
             case GetRoleAction:
-                fetch("http://localhost:8080/role")
-                    .then(
-                        response => response.json()
-                    )
-                    .then(
-                        response => store.dispatch(new SetRole(response))
-                    )
+                fetch("http://localhost:8080/role", {
+                        method: "get",
+                    }
+                ).then(
+                    response => response.json()
+                ).then(
+                    response => store.dispatch(new SetRole(response))
+                )
                 break;
         }
 
