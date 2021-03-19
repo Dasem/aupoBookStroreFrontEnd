@@ -5,21 +5,21 @@ const Login = (props) => {
     return (
         <div>
             <Row>
-                <Col />
+                <Col/>
                 <Col lg="8">
                     <Jumbotron>
                         <h3>
                             <u>Login Form</u>
                         </h3>
-                        <hr />
+                        <hr/>
                         <Card>
                             <CardBody>
-                                <LoginForm />
+                                <LoginForm/>
                             </CardBody>
                         </Card>
                     </Jumbotron>
                 </Col>
-                <Col />
+                <Col/>
             </Row>
         </div>
     );

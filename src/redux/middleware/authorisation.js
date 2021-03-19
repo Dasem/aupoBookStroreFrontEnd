@@ -6,10 +6,12 @@ export default function authorisationMiddleware() {
         switch (action.type) {
             case TryToLoginAction:
                 fetch("http://localhost:8080/login", {
+                    method:'post',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
-                    }
+                    },
+                    body: action.payload,
                 }).then(
                     response => response.json()
                 ).then(

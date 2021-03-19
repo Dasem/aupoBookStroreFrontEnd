@@ -2,15 +2,11 @@ import React from "react";
 import {Button} from "reactstrap";
 import {AvForm, AvField} from "availity-reactstrap-validation";
 import "./login-form.css"
+import {useHistory} from "react-router";
 
-const LoginForm = () => {
+const LoginForm = (props) => {
     const handleValidSubmit = (event, values) => {
-        if (event.target.id === 'login') {
-            login(values);
-        } else {
-            register(values);
-        }
-        //this.setState({login: values.login});
+        login(values);
     };
 
     const handleInvalidSubmit = (event, errors, values) => {
@@ -19,16 +15,42 @@ const LoginForm = () => {
     };
 
     const login = (values) => {
-        // todo: login
+        //props.tryToLogin({login: values.login, password: values.password})
+        fetch("http://localhost:8080/perform_login", {
+            method: 'post',
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            body: new URLSearchParams({login: values.login, password: values.password}),
+        }).then(
+            response => {
+                return props.getRole();
+            }
+        ).then(
+            response => history.push('/authorisation')
+        ).catch(
+            error => console.log(error)
+        );
     }
 
+    const history = useHistory();
+
     const register = (values) => {
-        // todo: register
+        fetch("http://localhost:8080/register", {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({login: values.login, password: values.password}),
+        }).then(
+            response => login(values) // Автоматическая авторизация по окончании регистрации
+        ).catch(
+            error => console.log(error)
+        );
     }
 
     return (
         <AvForm
-            onValidSubmit={handleValidSubmit}
+            onValidSubmit={(event, values) => handleValidSubmit(event, values)}
             onInvalidSubmit={handleInvalidSubmit}
         >
             <AvField

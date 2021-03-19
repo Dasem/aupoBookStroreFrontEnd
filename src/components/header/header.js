@@ -15,12 +15,13 @@ const Header = (props) => {
     }
 
     const logout = () => {
-        // todo: сделать логаут
-    }
-
-    const authorisation = () => {
-        // todo: сделать авторизацию
-
+        fetch("http://localhost:8080/logout")
+            .then(
+                response => props.history.push('/authorisation')
+            )
+            .catch(
+                error => console.log(error)
+            );
     }
 
     return (
