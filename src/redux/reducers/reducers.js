@@ -5,6 +5,7 @@ import books from "./books";
 import basket from "./basket";
 import role from "./role";
 import authorisation from "./authorisation";
+import genres from "./genres";
 
 /**
  * Combine and return all reducers to store
@@ -15,4 +16,5 @@ export default combineReducers({
     basket,
     role,
     authorisation,
+    genres,
 });

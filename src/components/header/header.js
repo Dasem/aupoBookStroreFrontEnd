@@ -3,12 +3,11 @@ import {AiFillAmazonCircle} from "react-icons/ai"
 import "./header.css"
 import {Link} from "react-router-dom";
 import {Route, useHistory} from "react-router";
-import {ANONYMOUS, getAuthorities} from "../consts/role";
+import {ADMIN, ANONYMOUS, getAuthorities} from "../consts/role";
 
 const Header = (props) => {
 
     const buy = () => {
-        //todo: Покупка добавить юзера, который оформляет заказ
         if (props.basket.length === 0) {
             alert('Корзина пуста, пожалуйста. добавьте товары');
         } else {
@@ -52,6 +51,11 @@ const Header = (props) => {
             {getAuthorities().includes(ANONYMOUS) &&
             <Link to={"/authorisation"}>
                 <button className={"authorisation-button"}>Войти / Зарегистрироваться</button>
+            </Link>
+            }
+            {getAuthorities().includes(ADMIN) &&
+            <Link to={"/goods"}>
+                <button className={"control-button"}>Управление товарами</button>
             </Link>
             }
         </Jumbotron>

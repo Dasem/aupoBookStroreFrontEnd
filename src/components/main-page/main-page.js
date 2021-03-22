@@ -6,6 +6,7 @@ import {BrowserRouter as Router} from "react-router-dom";
 import {Switch, Route} from "react-router";
 import Basket from "../basket/basket-container";
 import LoginForm from "../login/login-form-container";
+import Goods from "../admin/goods-container";
 
 const MainPage = () => {
 
@@ -25,6 +26,9 @@ const MainPage = () => {
                     </Route>
                     <Route path="/authorisation">
                         <LoginForm/>
+                    </Route>
+                    <Route path="/goods">
+                        <Goods/>
                     </Route>
                 </Switch>
             </Router>
