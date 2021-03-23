@@ -58,6 +58,11 @@ const Header = (props) => {
                 <button className={"control-button"}>Управление товарами</button>
             </Link>
             }
+            {getAuthorities().includes(ADMIN) &&
+            <Link to={"/orders"}>
+                <button className={"control-button"}>Управление заказами</button>
+            </Link>
+            }
         </Jumbotron>
     );
 }

@@ -11,7 +11,7 @@ export class SendOrder extends BaseAction {
 }
 
 export class GetOrders extends BaseAction {
-    constructor(payload) {
+    constructor(payload = {}) {
         super(GetOrdersAction, payload);
     }
 }

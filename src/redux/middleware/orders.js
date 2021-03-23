@@ -1,4 +1,4 @@
-import {GetOrdersAction, SendOrderAction, SetOrders} from "../actions/order";
+import {GetOrdersAction, SendOrderAction, SetOrders} from "../actions/orders";
 import {authHeader} from "../../components/consts/auth-header";
 
 /**

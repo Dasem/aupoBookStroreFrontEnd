@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import Header from "./header";
 import {SetBasket} from "../../redux/actions/basket";
-import {SendOrder} from "../../redux/actions/order";
+import {SendOrder} from "../../redux/actions/orders";
 import {GetRole} from "../../redux/actions/role";
 
 const mapStateToProps = state => ({

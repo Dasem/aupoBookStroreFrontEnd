@@ -8,6 +8,7 @@ import ordersMiddleware from "./middleware/orders";
 import roleMiddleware from "./middleware/role";
 import authorisationMiddleware from "./middleware/authorisation";
 import genresMiddleware from "./middleware/genres";
+import usersMiddleware from "./middleware/users";
 
 /**
  * To initialize the store
@@ -25,6 +26,8 @@ export default function configureStore() {
         roleMiddleware(),
         authorisationMiddleware(),
         genresMiddleware(),
+        usersMiddleware(),
+        ordersMiddleware(),
     ]);
 
     // create a new store and return it

@@ -7,6 +7,7 @@ import {Switch, Route} from "react-router";
 import Basket from "../basket/basket-container";
 import LoginForm from "../login/login-form-container";
 import Goods from "../admin/goods-container";
+import Orders from "../admin/orders-container";
 
 const MainPage = () => {
 
@@ -29,6 +30,9 @@ const MainPage = () => {
                     </Route>
                     <Route path="/goods">
                         <Goods/>
+                    </Route>
+                    <Route path="/orders">
+                        <Orders/>
                     </Route>
                 </Switch>
             </Router>
