@@ -13,7 +13,7 @@ const mapDispatchToProps = dispatch => {
     return {
         setBasket: (basket) => dispatch(new SetBasket(basket)),
         sendOrder: (order) => dispatch(new SendOrder(order)),
-        getRole: (role) => dispatch(new GetRole(role)),
+        getRole: () => dispatch(new GetRole()),
     }
 }
 

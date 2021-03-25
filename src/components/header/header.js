@@ -4,8 +4,13 @@ import "./header.css"
 import {Link} from "react-router-dom";
 import {Route, useHistory} from "react-router";
 import {ADMIN, ANONYMOUS, getAuthorities} from "../consts/role";
+import {useEffect} from "react";
 
 const Header = (props) => {
+
+    useEffect(() => {
+        props.getRole();
+    }, []);
 
     const buy = () => {
         if (props.basket.length === 0) {
@@ -61,6 +66,11 @@ const Header = (props) => {
             {getAuthorities().includes(ADMIN) &&
             <Link to={"/orders"}>
                 <button className={"control-button"}>Управление заказами</button>
+            </Link>
+            }
+            {getAuthorities().includes(ADMIN) &&
+            <Link to={"/users"}>
+                <button className={"control-button"}>Управление пользователями</button>
             </Link>
             }
         </Jumbotron>

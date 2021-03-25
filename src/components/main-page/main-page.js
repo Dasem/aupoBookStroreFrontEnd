@@ -8,6 +8,7 @@ import Basket from "../basket/basket-container";
 import LoginForm from "../login/login-form-container";
 import Goods from "../admin/goods-container";
 import Orders from "../admin/orders-container";
+import Users from "../admin/users-container";
 
 const MainPage = () => {
 
@@ -33,6 +34,9 @@ const MainPage = () => {
                     </Route>
                     <Route path="/orders">
                         <Orders/>
+                    </Route>
+                    <Route path="/users">
+                        <Users/>
                     </Route>
                 </Switch>
             </Router>

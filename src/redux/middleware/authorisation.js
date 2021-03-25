@@ -1,4 +1,4 @@
-import {SetRole} from "../actions/role";
+import {SetRole, SetRoleAction} from "../actions/role";
 import {TryToLoginAction} from "../actions/authorisation";
 
 export default function authorisationMiddleware() {
@@ -7,7 +7,6 @@ export default function authorisationMiddleware() {
             case TryToLoginAction:
                 fetch("http://localhost:8080/login", {
                     method:'post',
-             //       mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
@@ -19,6 +18,8 @@ export default function authorisationMiddleware() {
                     response => store.dispatch(new SetRole(response))
                 )
                 break;
+            case SetRoleAction:
+
         }
 
         next({

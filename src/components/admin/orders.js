@@ -10,6 +10,11 @@ import {
 import {Multiselect} from 'multiselect-react-dropdown';
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 import {authHeader} from "../consts/auth-header";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Select from 'react-select';
+
+const dateFormat = require("dateformat");
 
 const getRowId = row => row.id;
 
@@ -32,10 +37,10 @@ const Orders = (props) => {
         )
     }
 
-    const saveOrUpdate = (book, callback) => {
+    const saveOrUpdate = (order, callback) => {
         fetch("http://localhost:8080/orders", {
             method: 'post',
-            body: JSON.stringify(book),
+            body: JSON.stringify(order),
             headers: {
                 ...authHeader(),
                 'Content-Type': 'application/json',
@@ -61,7 +66,7 @@ const Orders = (props) => {
     const MultiSelectFormatter = ({value}) => {
         return (
             <span>
-            {value ? JSON.parse(value).map((book) => book.title).join(', ') : ''}
+            {value ? value.map((book) => book.title).join(', ') : ''}
         </span>
         );
     }
@@ -70,12 +75,12 @@ const Orders = (props) => {
         <Multiselect
             options={props.books} // Options to display in the dropdown
             onSelect={(selectedList) => {
-                onValueChange(JSON.stringify(selectedList))
+                onValueChange(selectedList)
             }} // Function will trigger on select event
             onRemove={(selectedList) => {
-                onValueChange(JSON.stringify(selectedList))
+                onValueChange(selectedList)
             }} // Function will trigger on remove event
-            selectedValues={value ? JSON.parse(value) : []} // Preselected value to persist in dropdown
+            selectedValues={value ? value : []} // Preselected value to persist in dropdown
             displayValue="title" // Property name to display in the dropdown options
         />
     );
@@ -91,33 +96,47 @@ const Orders = (props) => {
     const UserFormatter = ({value}) => {
         return (
             <span>
-            {value ? value.login : ''}
+            {value ? value.login : 'Выберите пользователя'}
         </span>
         );
     }
 
-    const UserEditor = ({value, onValueChange}) => (
-        <select
-            className="form-control"
-            value={value}
-            onChange={e => onValueChange(e.target.value)}
-        >
-            {
-                props.users.map((user) => {
-                    return (
-                        <option value={JSON.stringify(user)}>
-                            {user.login}
-                        </option>
-                    )
-                })
-            }
-        </select>
-    );
+    const UserEditor = ({value, onValueChange}) => {
+        return (
+            <Select
+                onChange={selected => onValueChange(props.users.find(user => selected.value === user.id))}
+                options={props.users.map(user => {
+                        return {value: user.id, label: user.login};
+                    }
+                )}
+            />
+        );
+    }
 
     const UserTypeProvider = props => (
         <DataTypeProvider
             formatterComponent={UserFormatter}
             editorComponent={UserEditor}
+            {...props}
+        />
+    );
+
+    const DateFormatter = ({value}) => {
+        return (
+            <span>
+            {value ? dateFormat(value, 'fullDate') : ''}
+        </span>
+        );
+    }
+
+    const DateEditor = ({value, onValueChange}) => (
+        <DatePicker selected={value ? new Date(value) : new Date()} onChange={date => onValueChange(date)}/>
+    );
+
+    const DateTypeProvider = props => (
+        <DataTypeProvider
+            formatterComponent={DateFormatter}
+            editorComponent={DateEditor}
             {...props}
         />
     );
@@ -130,11 +149,12 @@ const Orders = (props) => {
 
     const [multiSelectColumns] = useState(['basket']);
     const [userSelectColumns] = useState(['user']);
+    const [dateSelectColumns] = useState(['orderDate']);
 
     const commitChanges = ({added, changed, deleted}) => {
         let changedRows;
         if (added) {
-            let addedRowWithFixedGenres = {...added[0], genres: JSON.parse(added[0].basket)}
+            let addedRowWithFixedGenres = {...added[0], genres: added[0].basket}
             saveOrUpdate(addedRowWithFixedGenres, (savedRow) => {
                 changedRows = [
                     ...props.orders,
@@ -144,10 +164,10 @@ const Orders = (props) => {
             });
         }
         if (changed) {
-            changedRows = props.books.forEach(row => {
+            changedRows = props.orders.forEach(row => {
                 if (changed[row.id]) { // Сохраняем изменённую строку
                     let orderWithStringBasket = {...row, ...changed[row.id]};
-                    let orderForSave = {...orderWithStringBasket, basket: JSON.parse(orderWithStringBasket.basket)};
+                    let orderForSave = {...orderWithStringBasket, basket: orderWithStringBasket.basket};
                     saveOrUpdate(orderForSave, (updatedOrder) => { // После сохранения пихаем её в отображение
                         changedRows = props.orders.map(row => (row.id === updatedOrder.id ? updatedOrder : row));
                         props.setOrders(changedRows);
@@ -164,13 +184,7 @@ const Orders = (props) => {
     return (
         <div className="card">
             <Grid
-                rows={props.orders ? props.orders.map(order => {
-                        return {
-                            ...order
-                            , basket: JSON.stringify(order.basket)
-                        }
-                    }
-                ) : []}
+                rows={props.orders ? props.orders : []}
                 columns={columns}
                 getRowId={getRowId}
             >
@@ -179,6 +193,9 @@ const Orders = (props) => {
                 />
                 <UserTypeProvider
                     for={userSelectColumns}
+                />
+                <DateTypeProvider
+                    for={dateSelectColumns}
                 />
                 <EditingState
                     onCommitChanges={commitChanges}
