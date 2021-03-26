@@ -30,7 +30,7 @@ const BookCard = (props) => {
         <Col>
             {!getAuthorities().includes(ANONYMOUS) &&
             <Route path={"/catalog"}>
-                <div className={"add-to-basket"}  onClick={() => addBookToBasket()}>
+                <div className={"add-to-basket " + (alreadyInBasket() ? "purchased" : "")}  onClick={() => addBookToBasket()}>
                     <AiFillPlusCircle size={30}/>
                 </div>
             </Route>

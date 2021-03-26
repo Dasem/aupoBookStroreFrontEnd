@@ -10,6 +10,10 @@
     width: fit-content;
 }
 
+.purchased {
+    color: aquamarine;
+}
+
 .remove-from-basket:hover {
     color: chocolate;
 }

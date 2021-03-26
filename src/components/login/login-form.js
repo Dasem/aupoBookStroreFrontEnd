@@ -24,7 +24,10 @@ const LoginForm = (props) => {
                     localStorage.setItem("user", JSON.stringify(response.data));
                 }
                 return response.data;
-            }).then(() => history.push('/catalog'));
+            }).then(() => {
+                props.getRole();
+                history.push('/catalog')
+            });
     }
 
     const register = () => {
