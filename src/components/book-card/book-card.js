@@ -4,6 +4,7 @@ import {AiFillMinusCircle, AiFillPlusCircle} from "react-icons/all";
 import "./book-card.css"
 import {Route} from "react-router";
 import {ANONYMOUS, getAuthorities} from "../consts/role";
+import {copy} from "../consts/utils"
 
 const BookCard = (props) => {
 
@@ -13,9 +14,9 @@ const BookCard = (props) => {
 
     const addBookToBasket = () => {
         if (!alreadyInBasket()) {
-            props.basket.push(props.book);
-            props.setBasket(props.basket);
-            //TODO: forceUpdate for adding
+            let basketWithNewBook = copy(props.basket);
+            basketWithNewBook.push(props.book);
+            props.setBasket(basketWithNewBook);
         } else {
             alert(`"${props.book.title}" уже есть в списке купленных товаров`);
         }

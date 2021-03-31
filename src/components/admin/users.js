@@ -7,10 +7,8 @@ import {
     TableEditRow,
     TableEditColumn,
 } from '@devexpress/dx-react-grid-bootstrap4';
-import {Multiselect} from 'multiselect-react-dropdown';
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
 import {authHeader} from "../consts/auth-header";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import {ROLES} from "../consts/role";
@@ -21,7 +19,7 @@ const Users = (props) => {
 
     let roles = ROLES
 
-    const deleteUser = (id, callback) => {
+    const deleteUser = (id, callback) => { // TODO: сделать по status'у редирект на /error
         fetch(`http://localhost:8080/users/${id}`, {
             method: 'delete',
             headers: {

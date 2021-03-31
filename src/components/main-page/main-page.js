@@ -17,9 +17,6 @@ const MainPage = () => {
             <Router>
                 <Header/>
                 <Switch>
-                    <Route path="/author/:authorId">
-                        <Catalog/>
-                    </Route>
                     <Route path="/catalog">
                         <Catalog/>
                     </Route>
