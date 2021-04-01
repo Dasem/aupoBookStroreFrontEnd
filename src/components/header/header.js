@@ -61,7 +61,7 @@ const Header = (props) => {
             }
             {getAuthorities().includes(ADMIN) &&
             <Link to={"/goods"}>
-                <button className={"control-button"}>Управление товарами</button>
+                <button data-test-id className={"control-button"}>Управление товарами</button>
             </Link>
             }
             {getAuthorities().includes(ADMIN) &&

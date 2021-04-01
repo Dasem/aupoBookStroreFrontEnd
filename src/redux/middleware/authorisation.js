@@ -18,8 +18,6 @@ export default function authorisationMiddleware() {
                     response => store.dispatch(new SetRole(response))
                 )
                 break;
-            case SetRoleAction:
-
         }
 
         next({

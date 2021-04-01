@@ -6,7 +6,6 @@ import {GetRole} from "../../redux/actions/role";
 
 const mapStateToProps = state => ({
     basket: state.basket.basket,
-    role: state.role.role,
 })
 
 const mapDispatchToProps = dispatch => {
