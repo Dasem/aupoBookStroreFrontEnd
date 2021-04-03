@@ -3,12 +3,13 @@ import thunk from "redux-thunk";
 import {createLogger} from "redux-logger";
 import reducers from "./reducers/reducers"
 
-import booksMiddleware from "./middleware/books"
 import ordersMiddleware from "./middleware/orders";
 import roleMiddleware from "./middleware/role";
 import authorisationMiddleware from "./middleware/authorisation";
 import genresMiddleware from "./middleware/genres";
 import usersMiddleware from "./middleware/users";
+import stompMiddleware from "./middleware/stomp";
+import {ConnectStomp} from "./actions/stomp";
 
 /**
  * To initialize the store
@@ -21,16 +22,18 @@ export default function configureStore() {
     // create middleware
     const middleware = applyMiddleware(...[
         thunk,
-        booksMiddleware(),
         ordersMiddleware(),
         roleMiddleware(),
         authorisationMiddleware(),
         genresMiddleware(),
         usersMiddleware(),
         ordersMiddleware(),
+        stompMiddleware(),
     ]);
 
     // create a new store and return it
     // store.dispatch();
-    return createStore(reducers, {}, middleware);
+    let store = createStore(reducers, {}, middleware);
+    store.dispatch(new ConnectStomp()); // Всё ок, хз чё он подчёркивает
+    return store;
 }

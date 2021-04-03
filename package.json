@@ -6,6 +6,7 @@
     "@devexpress/dx-react-core": "^2.7.5",
     "@devexpress/dx-react-grid": "^2.7.5",
     "@devexpress/dx-react-grid-bootstrap4": "^2.7.5",
+    "@stomp/stompjs": "^6.1.0",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.7.3",
@@ -36,6 +37,7 @@
     "redux-mock-store": "^1.5.4",
     "redux-promise-middleware": "^6.1.2",
     "redux-thunk": "^2.3.0",
+    "sockjs-client": "^1.5.1",
     "web-vitals": "^1.1.0"
   },
   "scripts": {

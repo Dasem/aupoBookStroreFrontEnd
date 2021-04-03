@@ -49,6 +49,8 @@ afterAll(() => server.close())
 
 test('admin buttons when admin role', async () => {
     expect(screen.getByText('Управление товарами')).toBeDefined();
+
     expect(screen.getByText('Управление заказами')).toBeDefined()
+
     expect(screen.getByText('Управление пользователями')).toBeDefined()
 })
