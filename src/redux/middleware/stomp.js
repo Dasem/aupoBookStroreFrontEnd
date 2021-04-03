@@ -8,18 +8,18 @@ import {SignUp, SignUpAction, SignInAction, SignIn} from "../actions/authorisati
 import {SetRole} from "../actions/role";
 import {useHistory} from "react-router";
 import {AUTH_COMPLETED_URL} from "../../components/consts/urls";
+import {GetOrdersAction, SetOrders} from "../actions/orders";
 
 /**
  * Middleware function
  */
 
+let wsServerUrl = 'http://localhost:8080/bs';
+
+let socket = new Socket(wsServerUrl);
+export let client;
 
 export default function stompMiddleware() {
-
-    var wsServerUrl = 'http://localhost:8080/bs';
-
-    var socket = new Socket(wsServerUrl);
-    var client;
 
     return store => next => action => {
 
@@ -45,9 +45,17 @@ export default function stompMiddleware() {
                             case "GET_BOOKS":
                                 store.dispatch(new SetBooks(data.content));
                                 break;
+
                             case "GET_GENRES":
                                 store.dispatch(new SetGenres(data.content));
                                 break;
+
+                            case "GET_ORDERS":
+                                store.dispatch(new SetOrders(data.content));
+                                break;
+                            case "CREATE_ORDER":
+
+
                             case "SIGN_IN":
                                 // todo: обработать ситуацию с некорректной авторизацией
                                 localStorage.setItem("user", JSON.stringify(data.content));
@@ -78,6 +86,9 @@ export default function stompMiddleware() {
                 break;
             case GetGenresAction:
                 client.send(`/genres`, authHeader());
+                break;
+            case GetOrdersAction:
+                client.send(`/orders`, authHeader());
                 break;
             case SignInAction:
                 client.send(`/signin`, {}, action.payload);
