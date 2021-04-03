@@ -26,7 +26,6 @@ const Header = (props) => {
 
     const logout = () => {
         localStorage.removeItem("user");
-        props.getRole();
         history.push('/authorisation')
     }
 

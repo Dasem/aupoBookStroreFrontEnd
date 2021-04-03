@@ -2,15 +2,23 @@ import {GetBooksAction, SetBooks} from "../actions/books";
 import * as Stomp from '@stomp/stompjs';
 import * as Socket from 'sockjs-client';
 import {ConnectStompAction} from "../actions/stomp";
+import {GetGenresAction, SetGenres} from "../actions/genres";
+import {authHeader} from "../../components/consts/auth-header";
+import {SignUp, SignUpAction, SignInAction, SignIn} from "../actions/authorisation";
+import {SetRole} from "../actions/role";
+import {useHistory} from "react-router";
+import {AUTH_COMPLETED_URL} from "../../components/consts/urls";
 
 /**
  * Middleware function
  */
+
+
 export default function stompMiddleware() {
 
-    var sServerUrl = 'http://localhost:8080/bs';
+    var wsServerUrl = 'http://localhost:8080/bs';
 
-    var socket = new Socket(sServerUrl);
+    var socket = new Socket(wsServerUrl);
     var client;
 
     return store => next => action => {
@@ -22,7 +30,7 @@ export default function stompMiddleware() {
 
         const stompOnClose = () => {
             setTimeout(() => {
-                socket = new Socket(sServerUrl);
+                socket = new Socket(wsServerUrl);
                 stompConnect();
             }, 3000);
         }
@@ -32,9 +40,24 @@ export default function stompMiddleware() {
             client.connect({}, frame => {
                     client.subscribe("/bookstore", (message) => {
                         let data = JSON.parse(message.body);
+                        // todo: если статус код 3xx - 4xx : страничку с ошибкой
                         switch (data.requestType) {
                             case "GET_BOOKS":
                                 store.dispatch(new SetBooks(data.content));
+                                break;
+                            case "GET_GENRES":
+                                store.dispatch(new SetGenres(data.content));
+                                break;
+                            case "SIGN_IN":
+                                // todo: обработать ситуацию с некорректной авторизацией
+                                localStorage.setItem("user", JSON.stringify(data.content));
+                                alert("Авторизация прошла успешно!");
+                                // todo: рабочий редирект на стартовую страницу (q) history.push(AUTH_COMPLETED_URL);
+                                break;
+                            case "SIGN_UP":
+                                // todo: обработать ситуацию с некорректной регистрацией
+                                // todo: автоматический вход после успешной регистрации
+                                alert("Регистрация прошла успешно!");
                                 break;
                             default:
                                 console.log(`Unknown requestType: ${data.requestType}`);
@@ -51,14 +74,20 @@ export default function stompMiddleware() {
                 stompConnect();
                 break;
             case GetBooksAction:
-                client.send(`/books`); // Было так, при необходимости разобраться чё это: "client.send(`/books`, {}, '');"
+                client.send(`/books`, authHeader());
+                break;
+            case GetGenresAction:
+                client.send(`/genres`, authHeader());
+                break;
+            case SignInAction:
+                client.send(`/signin`, {}, action.payload);
+                break;
+            case SignUpAction:
+                client.send(`/signup`, {}, action.payload);
                 break;
             default:
                 // do nothing
         }
-        next({
-            type: action.type,
-            payload: action.payload
-        })
+        next(action)
     }
 }

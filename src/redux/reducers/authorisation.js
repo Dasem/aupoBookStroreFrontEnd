@@ -1,5 +1,5 @@
 import {ANONYMOUS} from "../../components/consts/role";
-import {TryToLoginAction} from "../actions/authorisation";
+import {SignInAction} from "../actions/authorisation";
 
 const initialState = {
     role: ANONYMOUS
@@ -12,7 +12,7 @@ const initialState = {
  */
 export default function (state = initialState, action) {
     switch (action.type) {
-        case TryToLoginAction: return {
+        case SignInAction: return {
             ...state,
             role: action.payload
         }

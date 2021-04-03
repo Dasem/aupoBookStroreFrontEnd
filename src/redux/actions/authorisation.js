@@ -1,16 +1,16 @@
 import BaseAction from "../helpers/BaseAction";
 
-export const TryToLoginAction = "TryToLoginAction";
-export const RegisterAction = "RegisterAction";
+export const SignInAction = "SignInAction";
+export const SignUpAction = "SignUpAction";
 
-export class TryToLogin extends BaseAction {
+export class SignIn extends BaseAction {
     constructor(payload = {}) {
-        super(TryToLoginAction, payload);
+        super(SignInAction, payload);
     }
 }
 
-export class Register extends BaseAction {
+export class SignUp extends BaseAction {
     constructor(payload = {}) {
-        super(RegisterAction, payload);
+        super(SignUpAction, payload);
     }
 }
