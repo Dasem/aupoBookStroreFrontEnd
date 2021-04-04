@@ -3,9 +3,7 @@ import thunk from "redux-thunk";
 import {createLogger} from "redux-logger";
 import reducers from "./reducers/reducers"
 
-import ordersMiddleware from "./middleware/orders";
 import roleMiddleware from "./middleware/role";
-import usersMiddleware from "./middleware/users";
 import stompMiddleware from "./middleware/stomp";
 import {ConnectStomp} from "./actions/stomp";
 
@@ -20,10 +18,7 @@ export default function configureStore() {
     // create middleware
     const middleware = applyMiddleware(...[
         thunk,
-        ordersMiddleware(),
         roleMiddleware(),
-        usersMiddleware(),
-        ordersMiddleware(),
         stompMiddleware(),
     ]);
 

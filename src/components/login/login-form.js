@@ -10,34 +10,6 @@ const LoginForm = (props) => {
 
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
-    const history = useHistory();
-
-    const auth = () => {
-        //props.tryToLogin({login: values.login, password: values.password})
-        return axios
-            .post("http://localhost:8080/signin", {
-                login,
-                password,
-            })
-            .then((response) => {
-                if (response.data.accessToken) {
-                    localStorage.setItem("user", JSON.stringify(response.data));
-                }
-                return response.data;
-            }).then(() => {
-                props.getRole();
-                history.push('/catalog')
-            });
-    }
-
-    const register = () => {
-        return axios.post("http://localhost:8080/signup", {
-            login,
-            password,
-        }).then(
-            () => auth()
-        );
-    }
 
     function validateForm() {
         return login.length > 0 && password.length > 0;
@@ -63,10 +35,10 @@ const LoginForm = (props) => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </Form.Group>
-                <Button block size="lg" onClick={() => auth()} disabled={!validateForm()}>
+                <Button block size="lg" onClick={() => props.signIn({login, password})} disabled={!validateForm()}>
                     Войти
                 </Button>
-                <Button block size="lg" onClick={() => register()} disabled={!validateForm()}>
+                <Button block size="lg" onClick={() => props.signUp({login, password})} disabled={!validateForm()}>
                     Зарегистрироваться
                 </Button>
             </Form>

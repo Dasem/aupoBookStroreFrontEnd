@@ -13,10 +13,36 @@ import {authHeader} from "../consts/auth-header";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
+import {WS_TIMEOUT} from "../consts/utils";
 
 const dateFormat = require("dateformat");
 
 const getRowId = row => row.id;
+
+
+// --- Начало костыля для соединения реквеста и респонса
+let callback = null;
+let timeoutForWsResponse;
+
+export const receiveOrderOperation = (order) => {
+    if (callback) {
+        // Отключаем сброс коллбека по таймауту, т.к. достучались до сервера
+        if (timeoutForWsResponse) {
+            clearTimeout(timeoutForWsResponse);
+        }
+        callback(order);
+    } else {
+        alert('Косяк с коллбеком')
+    }
+    callback = null;
+}
+
+// Ожидаем ответа от сервера и выполняем действие. Возможно не дождёмся
+const waitForResponse = (cb) => {
+    callback = cb;
+    timeoutForWsResponse = setTimeout(() => callback = null, WS_TIMEOUT)
+}
+// --- Конец костыля
 
 const Orders = (props) => {
 
@@ -29,26 +55,6 @@ const Orders = (props) => {
                 'Accept': 'application/json'
             }
         }).then(
-            response => {
-                if (callback) {
-                    callback(response);
-                }
-            }
-        )
-    }
-
-    const saveOrUpdate = (order, callback) => {
-        fetch("http://localhost:8080/orders", {
-            method: 'post',
-            body: JSON.stringify(order),
-            headers: {
-                ...authHeader(),
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }).then(
-            response => response.json()
-        ).then(
             response => {
                 if (callback) {
                     callback(response);
@@ -152,10 +158,15 @@ const Orders = (props) => {
     const [dateSelectColumns] = useState(['orderDate']);
 
     const commitChanges = ({added, changed, deleted}) => {
+        if (callback) {
+            alert('Подождите окончания предыдущей операции');
+            return;
+        }
         let changedRows;
         if (added) {
             let addedRowWithFixedGenres = {...added[0], genres: added[0].basket}
-            saveOrUpdate(addedRowWithFixedGenres, (savedRow) => {
+            props.sendOrder(addedRowWithFixedGenres);
+            waitForResponse((savedRow) => {
                 changedRows = [
                     ...props.orders,
                     savedRow,
@@ -168,16 +179,17 @@ const Orders = (props) => {
                 if (changed[row.id]) { // Сохраняем изменённую строку
                     let orderWithStringBasket = {...row, ...changed[row.id]};
                     let orderForSave = {...orderWithStringBasket, basket: orderWithStringBasket.basket};
-                    saveOrUpdate(orderForSave, (updatedOrder) => { // После сохранения пихаем её в отображение
+                    props.sendOrder(orderForSave);
+                    waitForResponse((updatedOrder) => { // После сохранения пихаем её в отображение
                         changedRows = props.orders.map(row => (row.id === updatedOrder.id ? updatedOrder : row));
                         props.setOrders(changedRows);
                     });
                 }
             });
-
         }
         if (deleted) {
-            deleteOrder(deleted[0], () => props.getOrders());
+            props.deleteOrder(deleted[0].id);
+            waitForResponse(() => props.getOrders());
         }
     };
 
