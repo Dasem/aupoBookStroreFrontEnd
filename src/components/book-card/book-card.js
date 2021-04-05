@@ -3,6 +3,7 @@ import {Alert, Col} from "reactstrap";
 import "./book-card.css"
 import {Route} from "react-router";
 import {ANONYMOUS, getAuthorities} from "../consts/role";
+import {AiFillMinusCircle, AiFillPlusCircle} from "react-icons/all";
 import {copy} from "../consts/utils"
 
 const BookCard = (props) => {
@@ -31,11 +32,13 @@ const BookCard = (props) => {
             {!getAuthorities().includes(ANONYMOUS) &&
             <Route path={"/catalog"}>
                 <div className={"add-to-basket " + (alreadyInBasket() ? "purchased" : "")}  onClick={() => addBookToBasket()}>
+                    <AiFillPlusCircle size={30}/>
                 </div>
             </Route>
             }
             <Route path={"/basket"}>
                 <div className={"remove-from-basket"} onClick={() => removeBookFromBasket()}>
+                    <AiFillMinusCircle size={30}/>
                 </div>
             </Route>
             <h3>{props.book.title}</h3>

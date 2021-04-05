@@ -14,54 +14,16 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import {WS_TIMEOUT} from "../consts/utils";
+import {Locker} from "../consts/locker";
 
 const dateFormat = require("dateformat");
 
 const getRowId = row => row.id;
 
 
-// --- Начало костыля для соединения реквеста и респонса
-let callback = null;
-let timeoutForWsResponse;
-
-export const receiveOrderOperation = (order) => {
-    if (callback) {
-        // Отключаем сброс коллбека по таймауту, т.к. достучались до сервера
-        if (timeoutForWsResponse) {
-            clearTimeout(timeoutForWsResponse);
-        }
-        callback(order);
-    } else {
-        alert('Косяк с коллбеком')
-    }
-    callback = null;
-}
-
-// Ожидаем ответа от сервера и выполняем действие. Возможно не дождёмся
-const waitForResponse = (cb) => {
-    callback = cb;
-    timeoutForWsResponse = setTimeout(() => callback = null, WS_TIMEOUT)
-}
-// --- Конец костыля
+export const orderLocker = new Locker();
 
 const Orders = (props) => {
-
-    const deleteOrder = (id, callback) => {
-        fetch(`http://localhost:8080/orders/${id}`, {
-            method: 'delete',
-            headers: {
-                ...authHeader(),
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }).then(
-            response => {
-                if (callback) {
-                    callback(response);
-                }
-            }
-        )
-    }
 
     useEffect(() => {
         props.getBooks();
@@ -135,9 +97,15 @@ const Orders = (props) => {
         );
     }
 
-    const DateEditor = ({value, onValueChange}) => (
-        <DatePicker selected={value ? new Date(value) : new Date()} onChange={date => onValueChange(date)}/>
-    );
+    const DateEditor = ({value, onValueChange}) => {
+        let now = new Date();
+        if (!value) {
+            onValueChange(now)
+        }
+        return (
+            <DatePicker selected={value ? new Date(value) : now} onChange={date => onValueChange(date)}/>
+        );
+    }
 
     const DateTypeProvider = props => (
         <DataTypeProvider
@@ -158,15 +126,15 @@ const Orders = (props) => {
     const [dateSelectColumns] = useState(['orderDate']);
 
     const commitChanges = ({added, changed, deleted}) => {
-        if (callback) {
+        if (orderLocker.callback) {
             alert('Подождите окончания предыдущей операции');
             return;
         }
         let changedRows;
         if (added) {
             let addedRowWithFixedGenres = {...added[0], genres: added[0].basket}
-            props.sendOrder(addedRowWithFixedGenres);
-            waitForResponse((savedRow) => {
+            props.createOrder(addedRowWithFixedGenres);
+            orderLocker.waitForResponse((savedRow) => {
                 changedRows = [
                     ...props.orders,
                     savedRow,
@@ -179,8 +147,8 @@ const Orders = (props) => {
                 if (changed[row.id]) { // Сохраняем изменённую строку
                     let orderWithStringBasket = {...row, ...changed[row.id]};
                     let orderForSave = {...orderWithStringBasket, basket: orderWithStringBasket.basket};
-                    props.sendOrder(orderForSave);
-                    waitForResponse((updatedOrder) => { // После сохранения пихаем её в отображение
+                    props.createOrder(orderForSave);
+                    orderLocker.waitForResponse((updatedOrder) => { // После сохранения пихаем её в отображение
                         changedRows = props.orders.map(row => (row.id === updatedOrder.id ? updatedOrder : row));
                         props.setOrders(changedRows);
                     });
@@ -188,8 +156,8 @@ const Orders = (props) => {
             });
         }
         if (deleted) {
-            props.deleteOrder(deleted[0].id);
-            waitForResponse(() => props.getOrders());
+            props.deleteOrder(deleted[0]);
+            orderLocker.waitForResponse(() => props.getOrders());
         }
     };
 

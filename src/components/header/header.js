@@ -16,9 +16,8 @@ const Header = (props) => {
         if (props.basket.length === 0) {
             alert('Корзина пуста, пожалуйста. добавьте товары');
         } else {
-            props.sendOrder({basket: props.basket})
+            props.sendUserOrder({basket: props.basket})
             props.setBasket([])
-            alert('Покупка совершена');
         }
     }
 
@@ -27,6 +26,7 @@ const Header = (props) => {
     const logout = () => {
         localStorage.removeItem("user");
         history.push('/authorisation')
+        window.location.reload(); // костыль, мне влом думать как в хедере перерисовывтаь кнопки
     }
 
     return (

@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import Header from "./header";
 import {SetBasket} from "../../redux/actions/basket";
-import {SendOrder} from "../../redux/actions/orders";
+import {SendUserOrder} from "../../redux/actions/orders";
 import {GetRole} from "../../redux/actions/role";
 
 const mapStateToProps = state => ({
@@ -11,7 +11,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => {
     return {
         setBasket: (basket) => dispatch(new SetBasket(basket)),
-        sendOrder: (order) => dispatch(new SendOrder(order)),
+        sendUserOrder: (order) => dispatch(new SendUserOrder(order)),
         getRole: () => dispatch(new GetRole()),
     }
 }

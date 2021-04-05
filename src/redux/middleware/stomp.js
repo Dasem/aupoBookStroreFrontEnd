@@ -4,12 +4,16 @@ import * as Socket from 'sockjs-client';
 import {ConnectStompAction} from "../actions/stomp";
 import {GetGenresAction, SetGenres} from "../actions/genres";
 import {authHeader} from "../../components/consts/auth-header";
-import {SignUp, SignUpAction, SignInAction, SignIn} from "../actions/authorisation";
-import {SetRole} from "../actions/role";
-import {useHistory} from "react-router";
-import {AUTH_COMPLETED_URL} from "../../components/consts/urls";
-import {DeleteOrderAction, GetOrdersAction, SendOrderAction, SetOrders} from "../actions/orders";
-import {receiveOrderOperation} from "../../components/admin/orders";
+import {SignUpAction, SignInAction} from "../actions/authorisation";
+import {
+    DeleteOrderAction,
+    GetOrdersAction,
+    CreateOrderAction,
+    SetOrders,
+    SendUserOrder,
+    SendUserOrderAction
+} from "../actions/orders";
+import {orderLocker} from "../../components/admin/orders";
 import {GetUsersAction, SetUsers} from "../actions/user";
 
 /**
@@ -64,16 +68,20 @@ export default function stompMiddleware() {
                                 store.dispatch(new SetUsers(data.content));
                                 break;
                             case "CREATE_ORDER":
-                                receiveOrderOperation(data.content);
+                                orderLocker.receiveOperation(data.content);
+                                break;
+                            case "SEND_USER_ORDER":
+                                alert('Покупка совершена');
                                 break;
                             case "DELETE_ORDER":
-                                receiveOrderOperation();
+                                orderLocker.receiveOperation();
                                 break;
 
                             case "SIGN_IN":
                                 // todo: обработать ситуацию с некорректной авторизацией
                                 localStorage.setItem("user", JSON.stringify(data.content));
                                 alert("Авторизация прошла успешно!");
+                                window.location.reload(); // костыль, мне влом думать как в хедере перерисовывтаь кнопки
                                 // todo: рабочий редирект на стартовую страницу (q) history.push(AUTH_COMPLETED_URL);
                                 break;
                             case "SIGN_UP":
@@ -91,7 +99,7 @@ export default function stompMiddleware() {
             );
         }
 
-        // todo: перенесены на WS не все действия, скореев сего и не будут все, потому что мне надоело
+        // todo: перенесены на WS не все действия, скорее всего и не будут все, потому что мне надоело
         const doAction = () => {
             switch (action.type) {
                 case ConnectStompAction:
@@ -113,7 +121,10 @@ export default function stompMiddleware() {
                 case GetUsersAction:
                     client.send(`/admin/users`, authHeader());
                     break;
-                case SendOrderAction:
+                case SendUserOrderAction:
+                    client.send(`/order`, authHeader(), JSON.stringify(action.payload));
+                    break;
+                case CreateOrderAction:
                     client.send(`/admin/order`, authHeader(), JSON.stringify(action.payload));
                     break;
                 case DeleteOrderAction:
