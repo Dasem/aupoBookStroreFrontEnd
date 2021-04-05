@@ -15,6 +15,7 @@ const MainPage = (props) => {
     return (
         <Container>
             <Router>
+                <div id={"spinner"} className={"loader"}></div>
                 <Header/>
                 <Switch>
                     <Route path="/catalog">

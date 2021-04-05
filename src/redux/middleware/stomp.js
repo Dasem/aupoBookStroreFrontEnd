@@ -25,6 +25,8 @@ let wsServerUrl = 'http://localhost:8080/bs';
 let socket = new Socket(wsServerUrl);
 export let client;
 
+let tryToAction;
+
 export default function stompMiddleware() {
 
     return store => next => action => {
@@ -145,8 +147,16 @@ export default function stompMiddleware() {
 
         // todo: просто временное решение на ещё одну попытку коннекта, в идеале это сделать луше, но мне влом
         // лечит падение при обновлении страницы с данными: сокет ещё не успел законнектиться, но его юзаем
-        if (action.type !== ConnectStompAction && !client.connected) {
-            setTimeout(doAction, 1000);
+        const cantAction = () => action.type !== ConnectStompAction && !client.connected;
+
+        if (cantAction()) {
+            clearInterval(tryToAction); // вдруг уже висел
+            tryToAction = setInterval(() => {
+                if (!cantAction()) {
+                    doAction();
+                    clearInterval(tryToAction);
+                }
+            }, 500)
         } else {
             doAction();
         }
