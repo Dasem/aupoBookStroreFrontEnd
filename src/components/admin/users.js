@@ -8,7 +8,7 @@ import {
     TableEditColumn,
 } from '@devexpress/dx-react-grid-bootstrap4';
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
-import {authHeader} from "../consts/auth-header";
+import {auth} from "../consts/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import {ROLES} from "../consts/role";
@@ -23,7 +23,7 @@ const Users = (props) => {
         fetch(`http://localhost:8080/users/${id}`, {
             method: 'delete',
             headers: {
-                ...authHeader(),
+                ...auth(),
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
@@ -41,7 +41,7 @@ const Users = (props) => {
             method: 'post',
             body: JSON.stringify(user),
             headers: {
-                ...authHeader(),
+                ...auth(),
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }

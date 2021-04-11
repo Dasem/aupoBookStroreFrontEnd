@@ -9,7 +9,7 @@ import {
 } from '@devexpress/dx-react-grid-bootstrap4';
 import {Multiselect} from 'multiselect-react-dropdown';
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
-import {authHeader} from "../consts/auth-header";
+import {auth} from "../consts/auth";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';

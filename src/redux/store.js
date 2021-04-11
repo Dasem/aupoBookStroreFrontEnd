@@ -3,9 +3,9 @@ import thunk from "redux-thunk";
 import {createLogger} from "redux-logger";
 import reducers from "./reducers/reducers"
 
-import roleMiddleware from "./middleware/role";
 import stompMiddleware from "./middleware/stomp";
 import {ConnectStomp} from "./actions/stomp";
+import {extractLogin} from "../components/consts/auth";
 
 /**
  * To initialize the store
@@ -18,11 +18,15 @@ export default function configureStore() {
     // create middleware
     const middleware = applyMiddleware(...[
         thunk,
-        roleMiddleware(),
         stompMiddleware(),
     ]);
 
     let store = createStore(reducers, {}, middleware);
-    store.dispatch(new ConnectStomp()); // Всё ок, хз чё он подчёркивает
+    let userLogin = extractLogin();
+    if (userLogin) {
+        store.dispatch(new ConnectStomp(`/bookstore-${userLogin}`)); // Всё ок, хз чё он подчёркивает
+    } else {
+        store.dispatch(new ConnectStomp("/bookstore")); // Всё ок, хз чё он подчёркивает
+    }
     return store;
 }

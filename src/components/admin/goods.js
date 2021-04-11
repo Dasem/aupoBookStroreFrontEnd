@@ -9,7 +9,7 @@ import {
 } from '@devexpress/dx-react-grid-bootstrap4';
 import {Multiselect} from 'multiselect-react-dropdown';
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
-import {authHeader} from "../consts/auth-header";
+import {auth} from "../consts/auth";
 
 const getRowId = row => row.id;
 
@@ -17,7 +17,7 @@ const deleteBook = (id, callback) => {
     fetch(`http://localhost:8080/books/${id}`, {
         method: 'delete',
         headers: {
-            ...authHeader(),
+            ...auth(),
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
@@ -35,7 +35,7 @@ const saveOrUpdate = (book, callback) => {
         method: 'post',
         body: JSON.stringify(book),
         headers: {
-            ...authHeader(),
+            ...auth(),
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }

@@ -1,9 +1,9 @@
 import {GetBooksAction, SetBooks} from "../actions/books";
 import * as Stomp from '@stomp/stompjs';
 import * as Socket from 'sockjs-client';
-import {ConnectStompAction} from "../actions/stomp";
+import {ConnectStomp, ConnectStompAction} from "../actions/stomp";
 import {GetGenresAction, SetGenres} from "../actions/genres";
-import {authHeader} from "../../components/consts/auth-header";
+import {auth, extractLogin} from "../../components/consts/auth";
 import {SignUpAction, SignInAction} from "../actions/authorisation";
 import {
     DeleteOrderAction,
@@ -46,7 +46,7 @@ export default function stompMiddleware() {
         const stompConnect = () => {
             client = Stomp.Stomp.over(socket);
             client.connect({}, frame => {
-                    client.subscribe("/user/bookstore", (message) => {
+                    client.subscribe(action.payload, (message) => {
                         let data = JSON.parse(message.body);
                         // todo: если статус код 3xx - 4xx : страничку с ошибкой
                         if (data.status < 200 || data.status >= 300) {
@@ -82,6 +82,7 @@ export default function stompMiddleware() {
                             case "SIGN_IN":
                                 // todo: обработать ситуацию с некорректной авторизацией
                                 localStorage.setItem("user", JSON.stringify(data.content));
+                                store.dispatch(new ConnectStomp(`/bookstore-${extractLogin()}`));
                                 alert("Авторизация прошла успешно!");
                                 window.location.reload(); // костыль, мне влом думать как в хедере перерисовывтаь кнопки
                                 // todo: рабочий редирект на стартовую страницу (q) history.push(AUTH_COMPLETED_URL);
@@ -105,32 +106,32 @@ export default function stompMiddleware() {
         const doAction = () => {
             switch (action.type) {
                 case ConnectStompAction:
-                    stompConnect();
+                    stompConnect(action.payload.login);
                     break;
 
                 case GetBooksAction:
-                    client.send(`/books`, authHeader());
+                    client.send(`/books`, auth());
                     break;
 
                 case GetGenresAction:
-                    client.send(`/genres`, authHeader());
+                    client.send(`/genres`, auth());
                     break;
 
                 case GetOrdersAction:
-                    client.send(`/orders`, authHeader());
+                    client.send(`/orders`, auth());
                     break;
 
                 case GetUsersAction:
-                    client.send(`/admin/users`, authHeader());
+                    client.send(`/admin/users`, auth());
                     break;
                 case SendUserOrderAction:
-                    client.send(`/order`, authHeader(), JSON.stringify(action.payload));
+                    client.send(`/order`, auth(), JSON.stringify(action.payload));
                     break;
                 case CreateOrderAction:
-                    client.send(`/admin/order`, authHeader(), JSON.stringify(action.payload));
+                    client.send(`/admin/order`, auth(), JSON.stringify(action.payload));
                     break;
                 case DeleteOrderAction:
-                    client.send(`/admin/order/${action.payload}`, authHeader());
+                    client.send(`/admin/order/${action.payload}`, auth());
                     break;
 
                 case SignInAction:
@@ -142,7 +143,10 @@ export default function stompMiddleware() {
                 default:
                 // do nothing
             }
-            next(action)
+            next({
+                type: action.type,
+                payload: action.payload
+            })
         }
 
         // todo: просто временное решение на ещё одну попытку коннекта, в идеале это сделать луше, но мне влом

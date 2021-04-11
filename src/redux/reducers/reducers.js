@@ -8,7 +8,6 @@ import authorisation from "./authorisation";
 import genres from "./genres";
 import orders from "./orders";
 import users from "./users";
-import stomp from "./stomp";
 
 /**
  * Combine and return all reducers to store
@@ -22,5 +21,4 @@ export default combineReducers({
     genres,
     orders,
     users,
-    stomp,
 });
