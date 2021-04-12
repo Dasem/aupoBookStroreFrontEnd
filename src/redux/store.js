@@ -23,10 +23,6 @@ export default function configureStore() {
 
     let store = createStore(reducers, {}, middleware);
     let userLogin = extractLogin();
-    if (userLogin) {
-        store.dispatch(new ConnectStomp(`/bookstore-${userLogin}`)); // Всё ок, хз чё он подчёркивает
-    } else {
-        store.dispatch(new ConnectStomp("/bookstore")); // Всё ок, хз чё он подчёркивает
-    }
+    store.dispatch(new ConnectStomp(`/bookstore`)); // Всё ок, хз чё он подчёркивает
     return store;
 }

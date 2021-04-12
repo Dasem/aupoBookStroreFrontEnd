@@ -26,7 +26,7 @@ const Header = (props) => {
     const logout = () => {
         localStorage.removeItem("user");
         history.push('/authorisation')
-        window.location.reload(); // костыль, мне влом думать как в хедере перерисовывтаь кнопки
+       window.location.reload(); // костыль, мне влом думать как в хедере перерисовывтаь кнопки
     }
 
     return (

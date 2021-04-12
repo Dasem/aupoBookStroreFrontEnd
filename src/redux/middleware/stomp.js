@@ -3,7 +3,7 @@ import * as Stomp from '@stomp/stompjs';
 import * as Socket from 'sockjs-client';
 import {ConnectStomp, ConnectStompAction} from "../actions/stomp";
 import {GetGenresAction, SetGenres} from "../actions/genres";
-import {auth, extractLogin} from "../../components/consts/auth";
+import {auth, extractLogin, extractUser} from "../../components/consts/auth";
 import {SignUpAction, SignInAction} from "../actions/authorisation";
 import {
     DeleteOrderAction,
@@ -45,7 +45,8 @@ export default function stompMiddleware() {
 
         const stompConnect = () => {
             client = Stomp.Stomp.over(socket);
-            client.connect({}, frame => {
+            let user = extractUser();
+            client.connect({name: user?.login}, frame => { // создаём сокет сразу с зареганным пользователем
                     client.subscribe(action.payload, (message) => {
                         let data = JSON.parse(message.body);
                         // todo: если статус код 3xx - 4xx : страничку с ошибкой
@@ -82,7 +83,7 @@ export default function stompMiddleware() {
                             case "SIGN_IN":
                                 // todo: обработать ситуацию с некорректной авторизацией
                                 localStorage.setItem("user", JSON.stringify(data.content));
-                                store.dispatch(new ConnectStomp(`/bookstore-${extractLogin()}`));
+                                //store.dispatch(new ConnectStomp(`/user/bookstore`));
                                 alert("Авторизация прошла успешно!");
                                 window.location.reload(); // костыль, мне влом думать как в хедере перерисовывтаь кнопки
                                 // todo: рабочий редирект на стартовую страницу (q) history.push(AUTH_COMPLETED_URL);
@@ -106,7 +107,7 @@ export default function stompMiddleware() {
         const doAction = () => {
             switch (action.type) {
                 case ConnectStompAction:
-                    stompConnect(action.payload.login);
+                    stompConnect();
                     break;
 
                 case GetBooksAction:
@@ -118,7 +119,7 @@ export default function stompMiddleware() {
                     break;
 
                 case GetOrdersAction:
-                    client.send(`/orders`, auth());
+                    client.send(`/admin/orders`, auth());
                     break;
 
                 case GetUsersAction:
