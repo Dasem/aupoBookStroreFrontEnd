@@ -35,6 +35,7 @@ export default function stompMiddleware() {
         const stompFailure = error => {
             console.log(`Stomp failure: ${error}`);
             setTimeout(stompConnect, 3000);
+            alert(`Ошибка: ${error}`);
         }
 
         const stompOnClose = () => {
