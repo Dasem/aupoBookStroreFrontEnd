@@ -6,6 +6,8 @@ import BaseAction from "../helpers/BaseAction";
  */
 export const GetBooksAction = "GetBooksAction";
 export const SetBooksAction = "SetBooksAction";
+export const CreateBookAction = "CreateBookAction";
+export const DeleteBookAction = "DeleteBookAction";
 
 /**
  * GetBooks action class
@@ -22,5 +24,17 @@ export class GetBooks extends BaseAction {
 export class SetBooks extends BaseAction {
     constructor(payload) {
         super(SetBooksAction, payload);
+    }
+}
+
+export class DeleteBook extends BaseAction {
+    constructor(payload) {
+        super(DeleteBookAction, payload);
+    }
+}
+
+export class CreateBook extends BaseAction {
+    constructor(payload) {
+        super(CreateBookAction, payload);
     }
 }

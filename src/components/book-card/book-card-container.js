@@ -6,7 +6,6 @@ import {SetBooks} from "../../redux/actions/books";
 const mapStateToProps = state => ({
     basket: state.basket.basket,
     books: state.books.books,
-    role: state.role.role,
 })
 
 const mapDispatchToProps = dispatch => {

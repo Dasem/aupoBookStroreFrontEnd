@@ -20,7 +20,6 @@ const dateFormat = require("dateformat");
 
 const getRowId = row => row.id;
 
-
 export const orderLocker = new Locker();
 
 const Orders = (props) => {
@@ -143,7 +142,7 @@ const Orders = (props) => {
             });
         }
         if (changed) {
-            changedRows = props.orders.forEach(row => {
+            props.orders.forEach(row => {
                 if (changed[row.id]) { // Сохраняем изменённую строку
                     let orderWithStringBasket = {...row, ...changed[row.id]};
                     let orderForSave = {...orderWithStringBasket, basket: orderWithStringBasket.basket};

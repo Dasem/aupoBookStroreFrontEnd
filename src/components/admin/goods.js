@@ -9,46 +9,11 @@ import {
 } from '@devexpress/dx-react-grid-bootstrap4';
 import {Multiselect} from 'multiselect-react-dropdown';
 import '@devexpress/dx-react-grid-bootstrap4/dist/dx-react-grid-bootstrap4.css';
-import {auth} from "../consts/auth";
+import {Locker} from "../consts/locker";
 
 const getRowId = row => row.id;
 
-const deleteBook = (id, callback) => {
-    fetch(`http://localhost:8080/books/${id}`, {
-        method: 'delete',
-        headers: {
-            ...auth(),
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    }).then(
-        response => {
-            if (callback) {
-                callback(response);
-            }
-        }
-    )
-}
-
-const saveOrUpdate = (book, callback) => {
-    fetch("http://localhost:8080/books", {
-        method: 'post',
-        body: JSON.stringify(book),
-        headers: {
-            ...auth(),
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    }).then(
-        response => response.json()
-    ).then(
-        response => {
-            if (callback) {
-                callback(response);
-            }
-        }
-    )
-}
+export const bookLocker = new Locker();
 
 const Goods = (props) => {
     useEffect(() => {
@@ -99,29 +64,32 @@ const Goods = (props) => {
         let changedRows;
         if (added) {
             let addedRowWithFixedGenres = {...added[0], genres: JSON.parse(added[0].genres)}
-            saveOrUpdate(addedRowWithFixedGenres, (savedRow) => {
+            props.createBook(addedRowWithFixedGenres);
+            bookLocker.waitForResponse((savedRow) => {
                 changedRows = [
                     ...props.books,
                     savedRow,
                 ];
                 props.setBooks(changedRows);
-            });
+            })
         }
         if (changed) {
-            changedRows = props.books.forEach(row => {
+            props.books.forEach(row => {
                 if (changed[row.id]) { // Сохраняем изменённую строку
                     let bookWithStringGenres = {...row, ...changed[row.id]};
                     let bookForSave = {...bookWithStringGenres, genres: JSON.parse(bookWithStringGenres.genres)};
-                    saveOrUpdate(bookForSave, (updatedBook) => { // После сохранения пихаем её в отображение
+                    props.createBook(bookForSave);
+                    bookLocker.waitForResponse((updatedBook) => { // После сохранения пихаем её в отображение
                         changedRows = props.books.map(row => (row.id === updatedBook.id ? updatedBook : row));
                         props.setBooks(changedRows);
-                    });
+                    })
                 }
             });
 
         }
         if (deleted) {
-            deleteBook(deleted[0], () => props.getBooks());
+            props.deleteBook(deleted[0]);
+            bookLocker.waitForResponse(() => props.getBooks());
         }
     };
 

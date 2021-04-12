@@ -1,20 +1,21 @@
-import {GetBooksAction, SetBooks} from "../actions/books";
+import {CreateBookAction, DeleteBookAction, GetBooksAction, SetBooks} from "../actions/books";
 import * as Stomp from '@stomp/stompjs';
 import * as Socket from 'sockjs-client';
-import {ConnectStomp, ConnectStompAction} from "../actions/stomp";
+import {ConnectStompAction} from "../actions/stomp";
 import {GetGenresAction, SetGenres} from "../actions/genres";
-import {auth, extractLogin, extractUser} from "../../components/consts/auth";
+import {auth, extractUser} from "../../components/consts/auth";
 import {SignUpAction, SignInAction} from "../actions/authorisation";
 import {
     DeleteOrderAction,
     GetOrdersAction,
     CreateOrderAction,
     SetOrders,
-    SendUserOrder,
     SendUserOrderAction
 } from "../actions/orders";
 import {orderLocker} from "../../components/admin/orders";
-import {GetUsersAction, SetUsers} from "../actions/user";
+import {CreateUserAction, DeleteUserAction, GetUsersAction, SetUsers} from "../actions/user";
+import {bookLocker} from "../../components/admin/goods";
+import {userLocker} from "../../components/admin/users";
 
 /**
  * Middleware function
@@ -58,6 +59,12 @@ export default function stompMiddleware() {
                             case "GET_BOOKS":
                                 store.dispatch(new SetBooks(data.content));
                                 break;
+                            case "CREATE_BOOK":
+                                bookLocker.receiveOperation(data.content);
+                                break;
+                            case "DELETE_BOOK":
+                                bookLocker.receiveOperation(data.content);
+                                break;
 
                             case "GET_GENRES":
                                 store.dispatch(new SetGenres(data.content));
@@ -70,14 +77,20 @@ export default function stompMiddleware() {
                             case "GET_USERS":
                                 store.dispatch(new SetUsers(data.content));
                                 break;
+                            case "CREATE_USER":
+                                userLocker.receiveOperation(data.content);
+                                break;
+                            case "DELETE_USER":
+                                userLocker.receiveOperation(data.content);
+                                break;
                             case "CREATE_ORDER":
+                                orderLocker.receiveOperation(data.content);
+                                break;
+                            case "DELETE_ORDER":
                                 orderLocker.receiveOperation(data.content);
                                 break;
                             case "SEND_USER_ORDER":
                                 alert('Покупка совершена');
-                                break;
-                            case "DELETE_ORDER":
-                                orderLocker.receiveOperation();
                                 break;
 
                             case "SIGN_IN":
@@ -113,26 +126,38 @@ export default function stompMiddleware() {
                 case GetBooksAction:
                     client.send(`/books`, auth());
                     break;
-
-                case GetGenresAction:
-                    client.send(`/genres`, auth());
+                case CreateBookAction:
+                    client.send(`/admin/books`, auth(), JSON.stringify(action.payload));
+                    break;
+                case DeleteBookAction:
+                    client.send(`/admin/books/${action.payload}`, auth());
                     break;
 
                 case GetOrdersAction:
                     client.send(`/admin/orders`, auth());
-                    break;
-
-                case GetUsersAction:
-                    client.send(`/admin/users`, auth());
-                    break;
-                case SendUserOrderAction:
-                    client.send(`/order`, auth(), JSON.stringify(action.payload));
                     break;
                 case CreateOrderAction:
                     client.send(`/admin/order`, auth(), JSON.stringify(action.payload));
                     break;
                 case DeleteOrderAction:
                     client.send(`/admin/order/${action.payload}`, auth());
+                    break;
+                case SendUserOrderAction:
+                    client.send(`/order`, auth(), JSON.stringify(action.payload));
+                    break;
+
+                case GetUsersAction:
+                    client.send(`/admin/get-users`, auth());
+                    break;
+                case CreateUserAction:
+                    client.send(`/admin/users`, auth(), JSON.stringify(action.payload));
+                    break;
+                case DeleteUserAction:
+                    client.send(`/admin/users/${action.payload}`, auth());
+                    break;
+
+                case GetGenresAction:
+                    client.send(`/genres`, auth());
                     break;
 
                 case SignInAction:

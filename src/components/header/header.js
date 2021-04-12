@@ -8,10 +8,6 @@ import {useEffect} from "react";
 
 const Header = (props) => {
 
-    useEffect(() => {
-        props.getRole();
-    }, []);
-
     const buy = () => {
         if (props.basket.length === 0) {
             alert('Корзина пуста, пожалуйста. добавьте товары');

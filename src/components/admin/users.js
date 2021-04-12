@@ -12,49 +12,15 @@ import {auth} from "../consts/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import {ROLES} from "../consts/role";
+import {Locker} from "../consts/locker";
 
 const getRowId = row => row.id;
+
+export const userLocker = new Locker();
 
 const Users = (props) => {
 
     let roles = ROLES
-
-    const deleteUser = (id, callback) => { // TODO: сделать по status'у редирект на /error
-        fetch(`http://localhost:8080/users/${id}`, {
-            method: 'delete',
-            headers: {
-                ...auth(),
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }).then(
-            response => {
-                if (callback) {
-                    callback(response);
-                }
-            }
-        )
-    }
-
-    const saveOrUpdate = (user, callback) => {
-        fetch("http://localhost:8080/users", {
-            method: 'post',
-            body: JSON.stringify(user),
-            headers: {
-                ...auth(),
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        }).then(
-            response => response.json()
-        ).then(
-            response => {
-                if (callback) {
-                    callback(response);
-                }
-            }
-        )
-    }
 
     useEffect(() => {
         props.getUsers();
@@ -126,7 +92,8 @@ const Users = (props) => {
     const commitChanges = ({added, changed, deleted}) => {
         let changedRows;
         if (added) {
-            saveOrUpdate(...added, (savedRow) => {
+            props.createUser(...added);
+            userLocker.waitForResponse((savedRow) => {
                 changedRows = [
                     ...props.users,
                     savedRow,
@@ -135,10 +102,11 @@ const Users = (props) => {
             });
         }
         if (changed) {
-            changedRows = props.users.forEach(row => {
+            props.users.forEach(row => {
                 if (changed[row.id]) { // Сохраняем изменённую строку
                     let forSave = {...row, ...changed[row.id]};
-                    saveOrUpdate(forSave, (updated) => { // После сохранения пихаем её в отображение
+                    props.createUser(forSave);
+                    userLocker.waitForResponse((updated) => { // После сохранения пихаем её в отображение
                         changedRows = props.users.map(row => (row.id === updated.id ? updated : row));
                         props.setUsers(changedRows);
                     });
@@ -147,7 +115,8 @@ const Users = (props) => {
 
         }
         if (deleted) {
-            deleteUser(deleted[0], () => props.getUsers());
+            props.deleteUser(deleted[0]);
+            userLocker.waitForResponse(() => props.getUsers())
         }
     };
 
