@@ -77,7 +77,12 @@ const Goods = (props) => {
             props.books.forEach(row => {
                 if (changed[row.id]) { // Сохраняем изменённую строку
                     let bookWithStringGenres = {...row, ...changed[row.id]};
-                    let bookForSave = {...bookWithStringGenres, genres: JSON.parse(bookWithStringGenres.genres)};
+                    let bookForSave;
+                    if ({...changed[row.id]}.genres) { // Костыль, т.к. если жанры не меняются они приходят в норм виде и их не надо парсить
+                        bookForSave = {...bookWithStringGenres, genres: JSON.parse(bookWithStringGenres.genres)};
+                    } else {
+                        bookForSave = {...bookWithStringGenres};
+                    }
                     props.createBook(bookForSave);
                     bookLocker.waitForResponse((updatedBook) => { // После сохранения пихаем её в отображение
                         changedRows = props.books.map(row => (row.id === updatedBook.id ? updatedBook : row));

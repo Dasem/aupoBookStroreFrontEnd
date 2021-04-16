@@ -48,7 +48,7 @@ export default function stompMiddleware() {
         const stompConnect = () => {
             client = Stomp.Stomp.over(socket);
             let user = extractUser();
-            client.connect({name: user?.login}, frame => { // создаём сокет сразу с зареганным пользователем
+            client.connect({}, frame => {
                     client.subscribe(action.payload, (message) => {
                         let data = JSON.parse(message.body);
                         // todo: если статус код 3xx - 4xx : страничку с ошибкой
